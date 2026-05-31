@@ -1,0 +1,22 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Pass the Authorization header to PHP (fixes "Unauthorized" on live servers)
+    RewriteCond %{HTTP:Authorization} ^(.+)$
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # (Optional) If you want to remove ".php" from URLs, uncomment the next block:
+    # RewriteCond %{REQUEST_FILENAME} !-d
+    # RewriteCond %{REQUEST_FILENAME}.php -f
+    # RewriteRule ^(.*)$ $1.php [L]
+</IfModule>
+
+# Prevent direct access to the SQLite database
+<Files "socialgrow.sqlite">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Optional: increase upload limit for QR codes (adjust as needed)
+# php_value upload_max_filesize 10M
+# php_value post_max_size 12M
