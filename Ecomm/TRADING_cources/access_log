@@ -1,0 +1,32 @@
+::1 - - [31/May/2026:05:30:57 +0530] "GET / HTTP/1.1" 200 383
+::1 - - [31/May/2026:05:30:58 +0530] "GET /favicon.ico HTTP/1.1" 404 196
+::1 - - [31/May/2026:05:31:02 +0530] "GET /api.php HTTP/1.1" 200 57063
+::1 - - [31/May/2026:05:31:02 +0530] "GET /api.php?action=boot HTTP/1.1" 200 187748
+::1 - - [31/May/2026:05:31:23 +0530] "POST /api.php?action=login_user HTTP/1.1" 401 47
+::1 - - [31/May/2026:05:31:24 +0530] "POST /api.php?action=login_user HTTP/1.1" 401 47
+::1 - - [31/May/2026:05:31:40 +0530] "POST /api.php?action=register_user HTTP/1.1" 400 39
+::1 - - [31/May/2026:05:31:49 +0530] "POST /api.php?action=register_user HTTP/1.1" 400 39
+::1 - - [31/May/2026:05:33:48 +0530] "POST /api.php?action=register_user HTTP/1.1" 400 39
+::1 - - [31/May/2026:05:33:49 +0530] "GET /api.php HTTP/1.1" 200 57063
+::1 - - [31/May/2026:05:33:50 +0530] "GET /api.php?action=boot HTTP/1.1" 200 187748
+::1 - - [31/May/2026:05:34:21 +0530] "GET /api.php HTTP/1.1" 200 63793
+::1 - - [31/May/2026:05:34:22 +0530] "GET /api.php?action=boot HTTP/1.1" 200 4355
+::1 - - [31/May/2026:05:36:55 +0530] "GET /api.php HTTP/1.1" 200 57062
+::1 - - [31/May/2026:05:36:55 +0530] "GET /api.php?action=boot HTTP/1.1" 200 187748
+::1 - - [31/May/2026:05:37:52 +0530] "POST /api.php?action=register_user HTTP/1.1" 200 11
+::1 - - [31/May/2026:05:37:52 +0530] "GET /api.php?action=boot HTTP/1.1" 200 187748
+::1 - - [31/May/2026:05:38:00 +0530] "POST /api.php?action=login_user HTTP/1.1" 200 230
+::1 - - [31/May/2026:05:38:01 +0530] "GET /api.php?action=boot HTTP/1.1" 200 187748
+::1 - - [31/May/2026:05:38:01 +0530] "GET /api.php?action=my_orders HTTP/1.1" 200 23
+::1 - - [31/May/2026:05:38:42 +0530] "POST /api.php?action=login_admin HTTP/1.1" 401 48
+::1 - - [31/May/2026:05:38:42 +0530] "POST /api.php?action=login_admin HTTP/1.1" 401 48
+::1 - - [31/May/2026:05:38:46 +0530] "POST /api.php?action=login_admin HTTP/1.1" 200 196
+::1 - - [31/May/2026:05:38:46 +0530] "GET /api.php?action=boot HTTP/1.1" 200 187748
+::1 - - [31/May/2026:05:38:46 +0530] "GET /api.php?action=admin_snapshot HTTP/1.1" 200 188102
+::1 - - [31/May/2026:05:39:03 +0530] "POST /api.php?action=delete_product HTTP/1.1" 200 11
+::1 - - [31/May/2026:05:39:03 +0530] "GET /api.php?action=admin_snapshot HTTP/1.1" 200 128909
+::1 - - [31/May/2026:05:39:03 +0530] "GET /api.php?action=boot HTTP/1.1" 200 128555
+::1 - - [31/May/2026:05:39:09 +0530] "GET /api.php?action=admin_snapshot HTTP/1.1" 200 128909
+::1 - - [31/May/2026:05:39:09 +0530] "GET /api.php?action=boot HTTP/1.1" 200 128555
+::1 - - [31/May/2026:05:42:40 +0530] "-" 408 -
+::1 - - [31/May/2026:05:42:40 +0530] "-" 408 -
