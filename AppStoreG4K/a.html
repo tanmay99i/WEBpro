@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G4K Admin Panel</title>
+    <style>
+        /* General Styles */
+        :root {
+            --primary-color: #82CAFF;
+            --secondary-color: #FFC107;
+            --text-color: #ffffff;
+            --bg-color: #121212;
+            --card-bg: #1f1f1f;
+            --input-bg: #333333;
+            --border-color: #555555;
+            --btn-hover: #66b2e2;
+            --border-radius: 12px;
+            --transition-speed: 0.3s;
+            --shadow-light: rgba(0, 0, 0, 0.3);
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: 0 4px 8px var(--shadow-light);
+            text-align: center;
+        }
+        
+        h1, h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background var(--transition-speed);
+            margin-top: 10px;
+        }
+        
+        .btn-submit:hover {
+            background-color: var(--btn-hover);
+        }
+
+        #login-btn {
+            margin-top: 20px;
+        }
+        
+        .message {
+            margin-top: 15px;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .success {
+            color: #28a745;
+        }
+        
+        .error {
+            color: #dc3545;
+        }
+
+        #adminPanel {
+            display: none;
+        }
+        
+        #links-section h3 {
+            color: var(--secondary-color);
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+
+        .link-container {
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            background-color: var(--input-bg);
+            position: relative;
+        }
+
+        .link-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .link-buttons .btn-submit {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.9rem;
+            margin-top: 0;
+        }
+
+        .remove-link-btn {
+            background-color: #dc3545;
+        }
+
+        .remove-link-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>G4K Admin Panel</h1>
+
+        <div id="loginForm">
+            <h2>Login</h2>
+            <div class="form-group">
+                <label for="adminUsername">Username</label>
+                <input type="text" id="adminUsername" placeholder="Enter username" />
+            </div>
+            <div class="form-group">
+                <label for="adminPassword">Password</label>
+                <input type="password" id="adminPassword" placeholder="Enter password" />
+            </div>
+            <button class="btn-submit" id="login-btn" onclick="login()">Login</button>
+            <p id="loginMessage" class="message"></p>
+        </div>
+
+        <div id="adminPanel">
+            <h2>Add New App Entry</h2>
+            <p>Fill out the details to submit a new app for approval.</p>
+            <div class="form-group">
+                <label for="newTitle">App Title</label>
+                <input type="text" id="newTitle" placeholder="e.g., MX Player PRO" />
+            </div>
+            <div class="form-group">
+                <label for="newDescription">Description</label>
+                <textarea id="newDescription" rows="4" placeholder="e.g., Premium Video Player + Without Ads + Supports All Video Codecs."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="newImageUrl">Image URL (optional if you upload)</label>
+                <input type="url" id="newImageUrl" placeholder="e.g., https://example.com/assets/mx.png" />
+            </div>
+
+            <div class="form-group">
+                <label for="newImageFile">Upload Image</label>
+                <input type="file" id="newImageFile" accept="image/*" />
+            </div>
+
+            <div id="links-section">
+                <h3>Download Links</h3>
+                <div id="linksContainer">
+                    <div class="link-container">
+                        <div class="form-group">
+                            <label>Link URL</label>
+                            <input type="url" class="linkUrl" placeholder="e.g., https://example.com/link" />
+                        </div>
+                        <div class="form-group">
+                            <label>Platform</label>
+                            <select class="linkPlatform">
+                                <option value="MediaFire">MediaFire</option>
+                                <option value="Mega">Mega</option>
+                                <option value="Telegram">Telegram</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Architecture</label>
+                            <select class="linkArchitecture">
+                                <option value="32-bit">32-bit</option>
+                                <option value="64-bit">64-bit</option>
+                                <option value="Universal">Universal</option>
+                            </select>
+                        </div>
+                        <div class="link-buttons">
+                            <button class="btn-submit add-link-btn" onclick="addLinkField()">Add Another Link</button>
+                            <button class="btn-submit remove-link-btn" onclick="removeLink(this)">Remove This Link</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-submit" style="margin-top: 20px;" onclick="addEntry()">Submit for Approval</button>
+            <p id="addMessage" class="message"></p>
+            <button class="btn-submit" style="margin-top: 20px;" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const adminPanel = document.getElementById('adminPanel');
+        const adminUsernameInput = document.getElementById('adminUsername');
+        const adminPasswordInput = document.getElementById('adminPassword');
+        const loginMessage = document.getElementById('loginMessage');
+        const newTitleInput = document.getElementById('newTitle');
+        const newDescriptionInput = document.getElementById('newDescription');
+        const newImageUrlInput = document.getElementById('newImageUrl');
+        const linksContainer = document.getElementById('linksContainer');
+        const addMessage = document.getElementById('addMessage');
+
+        async function checkAdminSession() {
+            try {
+                const response = await fetch('ap.php?action=check_session');
+                const data = await response.json();
+                
+                if (data.is_main_owner) {
+                    window.location.href = 'ma.html';
+                } else if (data.is_admin) {
+                    loginForm.style.display = 'none';
+                    adminPanel.style.display = 'block';
+                } else {
+                    loginForm.style.display = 'block';
+                    adminPanel.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error checking session:', error);
+                loginForm.style.display = 'block';
+                adminPanel.style.display = 'none';
+            }
+        }
+        
+        async function login() {
+            const username = adminUsernameInput.value;
+            const password = adminPasswordInput.value;
+            loginMessage.textContent = 'Logging in...';
+            loginMessage.className = 'message';
+
+            try {
+                const response = await fetch('ap.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'login', username: username, password: password })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    loginMessage.textContent = data.message;
+                    loginMessage.className = 'message success';
+                    setTimeout(() => {
+                        if (data.is_main_owner) {
+                            window.location.href = 'ma.html';
+                        } else {
+                            window.location.reload();
+                        }
+                    }, 500);
+                } else {
+                    loginMessage.textContent = data.message;
+                    loginMessage.className = 'message error';
+                }
+            } catch (error) {
+                loginMessage.textContent = 'An error occurred. Please try again.';
+                loginMessage.className = 'message error';
+            }
+        }
+
+        function addLinkField() {
+            const linkHtml = `
+                <div class="link-container">
+                    <div class="form-group">
+                        <label>Link URL</label>
+                        <input type="url" class="linkUrl" placeholder="e.g., https://example.com/link" />
+                    </div>
+                    <div class="form-group">
+                        <label>Platform</label>
+                        <select class="linkPlatform">
+                            <option value="MediaFire">MediaFire</option>
+                            <option value="Mega">Mega</option>
+                            <option value="Telegram">Telegram</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Architecture</label>
+                        <select class="linkArchitecture">
+                            <option value="32-bit">32-bit</option>
+                            <option value="64-bit">64-bit</option>
+                            <option value="Universal">Universal</option>
+                        </select>
+                    </div>
+                    <div class="link-buttons">
+                        <button class="btn-submit add-link-btn" onclick="addLinkField()">Add Another Link</button>
+                        <button class="btn-submit remove-link-btn" onclick="removeLink(this)">Remove This Link</button>
+                    </div>
+                </div>
+            `;
+            linksContainer.insertAdjacentHTML('beforeend', linkHtml);
+        }
+
+        function removeLink(button) {
+            if (linksContainer.children.length > 1) {
+                button.closest('.link-container').remove();
+            } else {
+                alert("You must have at least one link.");
+            }
+        }
+
+async function addEntry() {
+            const title = newTitleInput.value.trim();
+            const description = newDescriptionInput.value.trim();
+            const imageUrl = newImageUrlInput.value.trim();
+            const imageFile = document.getElementById('newImageFile') ? document.getElementById('newImageFile').files[0] : null;
+
+            const linkUrls = document.querySelectorAll('.linkUrl');
+            const linkPlatforms = document.querySelectorAll('.linkPlatform');
+            const linkArchitectures = document.querySelectorAll('.linkArchitecture');
+            
+            const links = [];
+            for (let i = 0; i < linkUrls.length; i++) {
+                if (linkUrls[i].value.trim()) {
+                    links.push({
+                        url: linkUrls[i].value.trim(),
+                        platform: linkPlatforms[i].value,
+                        architecture: linkArchitectures[i].value
+                    });
+                }
+            }
+
+            if (!title || !description || (!imageUrl && !imageFile) || links.length === 0) {
+                addMessage.textContent = 'Please fill out all required fields.';
+                addMessage.className = 'message error';
+                return;
+            }
+
+            addMessage.textContent = 'Submitting...';
+            addMessage.className = 'message';
+
+            try {
+                let response, data;
+                if (imageFile) {
+                    // when uploading file
+                    const formData = new FormData();
+                    formData.append("action", "add_pending_entry");
+                    formData.append("title", title);
+                    formData.append("description", description);
+                    formData.append("links", JSON.stringify(links));
+                    formData.append("image_file", imageFile);
+
+                    response = await fetch("ap.php", { method: "POST", body: formData });
+                } else {
+                    // when only using URL
+                    response = await fetch("ap.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ action: "add_pending_entry", title: title, description: description, image_url: imageUrl, links: links })
+                    });
+                }
+
+                data = await response.json();
+
+                if (data.success) {
+                    addMessage.textContent = data.message;
+                    addMessage.className = 'message success';
+                    newTitleInput.value = '';
+                    newDescriptionInput.value = '';
+                    newImageUrlInput.value = '';
+                    if (document.getElementById('newImageFile')) {
+                        document.getElementById('newImageFile').value = '';
+                    }
+                    linksContainer.innerHTML = `
+                        <div class="link-container">
+                            <div class="form-group">
+                                <label>Link URL</label>
+                                <input type="url" class="linkUrl" placeholder="e.g., https://example.com/link" />
+                            </div>
+                            <div class="form-group">
+                                <label>Platform</label>
+                                <select class="linkPlatform">
+                                    <option value="MediaFire">MediaFire</option>
+                                    <option value="Mega">Mega</option>
+                                    <option value="Telegram">Telegram</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Architecture</label>
+                                <select class="linkArchitecture">
+                                    <option value="32-bit">32-bit</option>
+                                    <option value="64-bit">64-bit</option>
+                                    <option value="Universal">Universal</option>
+                                </select>
+                            </div>
+                            <div class="link-buttons">
+                                <button class="btn-submit add-link-btn" onclick="addLinkField()">Add Another Link</button>
+                                <button class="btn-submit remove-link-btn" onclick="removeLink(this)">Remove This Link</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    addMessage.textContent = data.message;
+                    addMessage.className = 'message error';
+                }
+            } catch (error) {
+                addMessage.textContent = 'An error occurred. Please try again.';
+                addMessage.className = 'message error';
+            }
+        }
+
+        async function logout() {
+            try {
+                const response = await fetch('ap.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'logout' })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('Error logging out:', error);
+            }
+        }
+
+        window.onload = checkAdminSession;
+    </script>
+</body>
+</html>

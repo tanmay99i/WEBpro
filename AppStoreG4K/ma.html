@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G4K Main Admin Panel</title>
+    <style>
+        /* General Styles */
+        :root {
+            --primary-color: #82CAFF;
+            --secondary-color: #FFC107;
+            --text-color: #ffffff;
+            --bg-color: #121212;
+            --card-bg: #1f1f1f;
+            --input-bg: #333333;
+            --border-color: #555555;
+            --btn-hover: #66b2e2;
+            --border-radius: 12px;
+            --transition-speed: 0.3s;
+            --shadow-light: rgba(0, 0, 0, 0.3);
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: 0 4px 8px var(--shadow-light);
+            text-align: center;
+        }
+
+        h1, h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            box-sizing: border-box;
+        }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background var(--transition-speed);
+            margin-top: 10px;
+        }
+        
+        .btn-submit:hover {
+            background-color: var(--btn-hover);
+        }
+
+        .btn-approve {
+            background-color: #28a745;
+        }
+        .btn-approve:hover {
+            background-color: #218838;
+        }
+
+        .btn-disapprove {
+            background-color: #dc3545;
+        }
+        .btn-disapprove:hover {
+            background-color: #c82333;
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: #000;
+        }
+        .btn-edit:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+        }
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+        
+        .message {
+            margin-top: 15px;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .success {
+            color: #28a745;
+        }
+        
+        .error {
+            color: #dc3545;
+        }
+
+        .pending-link-item, .app-item {
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            text-align: left;
+        }
+
+        .app-item h4 {
+            margin: 0 0 10px 0;
+            color: var(--primary-color);
+        }
+
+        .app-item p {
+            margin: 0 0 10px 0;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        
+        .app-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 10px;
+            max-height: 150px;
+        }
+
+        .app-item .links-list {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0 0 0;
+        }
+
+        .app-item .links-list li {
+            margin-bottom: 8px;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+        .app-item .links-list a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .app-item .links-list a:hover {
+            text-decoration: underline;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-buttons .btn-submit {
+            flex: 1;
+            margin-top: 0;
+        }
+
+        /* Modal */
+        #appFormModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 25px;
+            border-radius: var(--border-radius);
+        }
+
+        .link-container {
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            background-color: var(--input-bg);
+            position: relative;
+        }
+
+        .link-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .link-buttons .btn-submit {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.9rem;
+            margin-top: 0;
+        }
+
+        .remove-link-btn {
+            background-color: #dc3545;
+        }
+
+        .remove-link-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>G4K Main Admin Dashboard</h1>
+
+        <!-- Register new admin -->
+        <h3>Register New Admin</h3>
+        <div class="form-group">
+            <label for="registerUsername">Username</label>
+            <input type="text" id="registerUsername" placeholder="New admin username" />
+        </div>
+        <div class="form-group">
+            <label for="registerPassword">Password</label>
+            <input type="password" id="registerPassword" placeholder="New admin password" />
+        </div>
+        <button class="btn-submit" onclick="registerUser()">Register Admin</button>
+        <p id="registerMessage" class="message"></p>
+
+        <!-- Pending apps -->
+        <h3>Pending Apps</h3>
+        <p id="pendingLinksMessage" class="message"></p>
+        <div id="pendingLinksContainer"></div>
+
+        <!-- Manage existing apps -->
+        <h3>Manage Existing Apps</h3>
+        
+        <!-- Search box for apps -->
+        <div class="form-group" style="margin-bottom: 10px;">
+            <input type="text" id="searchManageApps" placeholder="Search apps by title or description..." oninput="filterManageApps()" />
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <button class="btn-submit" onclick="loadApps()">Refresh Apps</button>
+            <button class="btn-submit" onclick="showAddAppForm()">Add New App</button>
+        </div>
+        <div id="appsContainer"></div>
+        
+        <button class="btn-submit" style="margin-top: 20px;" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- Modal for Add/Edit App -->
+    <div id="appFormModal">
+        <div class="modal-content">
+            <h2 id="formTitle">Add New App</h2>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" id="editTitle" />
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="editDescription" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Image URL</label>
+                <input type="url" id="editImageUrl" />
+            </div>
+            <div class="form-group">
+                <label>Or Upload Image</label>
+                <input type="file" id="editImageFile" accept="image/*" />
+            </div>
+
+            <div id="editLinksContainer">
+                <!-- Links will be dynamically inserted here -->
+            </div>
+            <button class="btn-submit" onclick="addLinkField()">Add Another Link</button>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-submit" onclick="saveApp()">Save</button>
+                <button class="btn-submit" onclick="hideForm()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ---------- Global variables ----------
+        let currentEditIndex = null; // null = adding new, number = editing
+        let allApps = []; // master list of { title, description, image_url, links, index }
+        let filteredApps = []; // filtered list for display
+
+        // DOM elements
+        const registerUsernameInput = document.getElementById('registerUsername');
+        const registerPasswordInput = document.getElementById('registerPassword');
+        const registerMessage = document.getElementById('registerMessage');
+        const pendingLinksContainer = document.getElementById('pendingLinksContainer');
+        const pendingLinksMessage = document.getElementById('pendingLinksMessage');
+        const appsContainer = document.getElementById('appsContainer');
+        const searchManageApps = document.getElementById('searchManageApps');
+
+        const modal = document.getElementById('appFormModal');
+        const formTitle = document.getElementById('formTitle');
+        const editTitle = document.getElementById('editTitle');
+        const editDescription = document.getElementById('editDescription');
+        const editImageUrl = document.getElementById('editImageUrl');
+        const editImageFile = document.getElementById('editImageFile');
+        const editLinksContainer = document.getElementById('editLinksContainer');
+
+        // ---------- Session check ----------
+        async function checkSession() {
+            try {
+                const response = await fetch('ap.php?action=check_session');
+                const data = await response.json();
+                if (!data.is_main_owner) {
+                    window.location.href = 'a.html';
+                } else {
+                    await loadPendingLinks();
+                    await loadApps();
+                }
+            } catch (error) {
+                console.error('Error checking session:', error);
+                window.location.href = 'a.html';
+            }
+        }
+        
+        // ---------- Register new admin ----------
+        async function registerUser() {
+            const username = registerUsernameInput.value;
+            const password = registerPasswordInput.value;
+
+            if (!username || !password) {
+                registerMessage.textContent = 'Username and password are required.';
+                registerMessage.className = 'message error';
+                return;
+            }
+
+            registerMessage.textContent = 'Registering user...';
+            registerMessage.className = 'message';
+
+            try {
+                const response = await fetch('ap.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'register', username: username, password: password })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    registerMessage.textContent = data.message;
+                    registerMessage.className = 'message success';
+                    registerUsernameInput.value = '';
+                    registerPasswordInput.value = '';
+                } else {
+                    registerMessage.textContent = data.message;
+                    registerMessage.className = 'message error';
+                }
+            } catch (error) {
+                registerMessage.textContent = 'An error occurred. Please try again.';
+                registerMessage.className = 'message error';
+            }
+        }
+
+        // ---------- Pending links (approve/disapprove) ----------
+        async function loadPendingLinks() {
+            pendingLinksMessage.textContent = 'Loading pending apps...';
+            pendingLinksMessage.className = 'message';
+            try {
+                const response = await fetch('ap.php?action=get_pending_links');
+                const data = await response.json();
+
+                if (data.success) {
+                    pendingLinksContainer.innerHTML = '';
+                    if (data.links.length === 0) {
+                        pendingLinksMessage.textContent = 'No pending apps to approve.';
+                        pendingLinksMessage.className = 'message';
+                    } else {
+                        pendingLinksMessage.textContent = '';
+                        data.links.forEach((link, index) => {
+                            const linksHtml = link.links.map(l => `
+                                <li>
+                                    <a href="${l.url}" target="_blank">${l.url}</a><br>
+                                    Platform: ${l.platform}, Architecture: ${l.architecture}
+                                </li>
+                            `).join('');
+                            const linkHtml = `
+                                <div class="pending-link-item">
+                                    <h4>${link.title}</h4>
+                                    <p>${link.description}</p>
+                                    <img src="${link.image_url}" alt="${link.title} image" />
+                                    <ul class="links-list">${linksHtml}</ul>
+                                    <div class="action-buttons">
+                                        <button class="btn-submit btn-approve" onclick="approveLink('${index}')">Approve</button>
+                                        <button class="btn-submit btn-disapprove" onclick="disapproveLink('${index}')">Disapprove</button>
+                                    </div>
+                                </div>
+                            `;
+                            pendingLinksContainer.innerHTML += linkHtml;
+                        });
+                    }
+                } else {
+                    pendingLinksMessage.textContent = data.message;
+                    pendingLinksMessage.className = 'message error';
+                }
+            } catch (error) {
+                pendingLinksMessage.textContent = 'Failed to load pending links.';
+                pendingLinksMessage.className = 'message error';
+            }
+        }
+
+        async function approveLink(index) {
+            try {
+                const response = await fetch('ap.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'approve_link', index: index })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                    await loadPendingLinks();
+                    await loadApps();
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('An error occurred during approval.');
+            }
+        }
+
+        async function disapproveLink(index) {
+            if (confirm('Are you sure you want to disapprove this link? It will be permanently removed.')) {
+                try {
+                    const response = await fetch('ap.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'disapprove_link', index: index })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        alert(data.message);
+                        await loadPendingLinks();
+                    } else {
+                        alert(data.message);
+                    }
+                } catch (error) {
+                    alert('An error occurred during disapproval.');
+                }
+            }
+        }
+
+        // ---------- Manage existing apps ----------
+        async function loadApps() {
+            appsContainer.innerHTML = '<p>Loading apps...</p>';
+            try {
+                const response = await fetch('ap.php?action=get_apps_raw');
+                const data = await response.json();
+                if (data.success) {
+                    allApps = data.apps_raw.map((block, index) => {
+                        return { ...parseAppBlock(block), index };
+                    });
+                    // Reset search field
+                    searchManageApps.value = '';
+                    filteredApps = [...allApps];
+                    renderApps(filteredApps);
+                } else {
+                    appsContainer.innerHTML = `<p class="error">${data.message}</p>`;
+                }
+            } catch (error) {
+                appsContainer.innerHTML = '<p class="error">Failed to load apps.</p>';
+                console.error(error);
+            }
+        }
+
+        function parseAppBlock(block) {
+            const lines = block.split('\n').filter(l => l.trim() !== '');
+            if (lines.length < 4) return { title: '', description: '', image_url: '', links: [] };
+            
+            const title = lines[0] || '';
+            const description = lines[1] || '';
+            const image_url = lines[2] || '';
+            const linksStr = lines[3] || '';
+            
+            const links = [];
+            const parts = linksStr.split(',').map(s => s.trim());
+            for (let part of parts) {
+                const match = part.match(/^(.*?)\s*\((.*?)\s*-\s*(.*?)\)$/);
+                if (match) {
+                    links.push({
+                        url: match[1].trim(),
+                        platform: match[2].trim(),
+                        architecture: match[3].trim()
+                    });
+                } else {
+                    links.push({ url: part, platform: 'Unknown', architecture: 'Unknown' });
+                }
+            }
+            return { title, description, image_url, links };
+        }
+
+        function renderApps(apps) {
+            if (apps.length === 0) {
+                appsContainer.innerHTML = '<p>No apps found.</p>';
+                return;
+            }
+            let html = '';
+            apps.forEach((app) => {
+                const linksList = app.links.map(l => 
+                    `<li><a href="${l.url}" target="_blank">${l.url}</a> (${l.platform} - ${l.architecture})</li>`
+                ).join('');
+                html += `
+                    <div class="app-item">
+                        <h4>${app.title}</h4>
+                        <p>${app.description}</p>
+                        <img src="${app.image_url}" alt="${app.title}" onerror="this.style.display='none'">
+                        <ul class="links-list">${linksList}</ul>
+                        <div class="action-buttons">
+                            <button class="btn-submit btn-edit" onclick="showEditForm(${app.index})">Edit</button>
+                            <button class="btn-submit btn-delete" onclick="deleteApp(${app.index})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+            appsContainer.innerHTML = html;
+        }
+
+        // Filter function for search box
+        function filterManageApps() {
+            const term = searchManageApps.value.toLowerCase().trim();
+            if (term === '') {
+                filteredApps = [...allApps];
+            } else {
+                filteredApps = allApps.filter(app => 
+                    app.title.toLowerCase().includes(term) || 
+                    app.description.toLowerCase().includes(term)
+                );
+            }
+            renderApps(filteredApps);
+        }
+
+        // ---------- Add / Edit form handling ----------
+        function showAddAppForm() {
+            currentEditIndex = null;
+            formTitle.textContent = 'Add New App';
+            editTitle.value = '';
+            editDescription.value = '';
+            editImageUrl.value = '';
+            editImageFile.value = '';  // clear file input
+            editLinksContainer.innerHTML = getEmptyLinkHtml();
+            modal.style.display = 'block';
+        }
+
+        function showEditForm(index) {
+            // Find app in master list (allApps) using index
+            const app = allApps.find(a => a.index === index);
+            if (!app) return;
+            currentEditIndex = index;
+            formTitle.textContent = 'Edit App';
+            editTitle.value = app.title;
+            editDescription.value = app.description;
+            editImageUrl.value = app.image_url;
+            editImageFile.value = '';  // clear file input
+            let linksHtml = '';
+            app.links.forEach(link => {
+                linksHtml += getLinkHtml(link.url, link.platform, link.architecture);
+            });
+            if (app.links.length === 0) linksHtml = getEmptyLinkHtml();
+            editLinksContainer.innerHTML = linksHtml;
+            modal.style.display = 'block';
+        }
+
+        function getEmptyLinkHtml() {
+            return getLinkHtml('', 'MediaFire', '32-bit');
+        }
+
+        function getLinkHtml(url = '', platform = 'MediaFire', arch = '32-bit') {
+            return `
+                <div class="link-container">
+                    <div class="form-group">
+                        <label>Link URL</label>
+                        <input type="url" class="linkUrl" value="${url.replace(/"/g, '&quot;')}" placeholder="e.g., https://example.com/link" />
+                    </div>
+                    <div class="form-group">
+                        <label>Platform</label>
+                        <select class="linkPlatform">
+                            <option value="MediaFire" ${platform === 'MediaFire' ? 'selected' : ''}>MediaFire</option>
+                            <option value="Mega" ${platform === 'Mega' ? 'selected' : ''}>Mega</option>
+                            <option value="Telegram" ${platform === 'Telegram' ? 'selected' : ''}>Telegram</option>
+                            <option value="Other" ${platform === 'Other' ? 'selected' : ''}>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Architecture</label>
+                        <select class="linkArchitecture">
+                            <option value="32-bit" ${arch === '32-bit' ? 'selected' : ''}>32-bit</option>
+                            <option value="64-bit" ${arch === '64-bit' ? 'selected' : ''}>64-bit</option>
+                            <option value="Universal" ${arch === 'Universal' ? 'selected' : ''}>Universal</option>
+                        </select>
+                    </div>
+                    <div class="link-buttons">
+                        <button class="btn-submit add-link-btn" onclick="addLinkField()">Add Another Link</button>
+                        <button class="btn-submit remove-link-btn" onclick="removeLink(this)">Remove This Link</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function addLinkField() {
+            editLinksContainer.insertAdjacentHTML('beforeend', getEmptyLinkHtml());
+        }
+
+        function removeLink(btn) {
+            if (editLinksContainer.children.length > 1) {
+                btn.closest('.link-container').remove();
+            } else {
+                alert("You must have at least one link.");
+            }
+        }
+
+        function hideForm() {
+            modal.style.display = 'none';
+        }
+
+        async function saveApp() {
+            const title = editTitle.value.trim();
+            const description = editDescription.value.trim();
+            const imageUrl = editImageUrl.value.trim();
+            const imageFile = editImageFile.files[0];
+
+            const linkContainers = editLinksContainer.querySelectorAll('.link-container');
+            const links = [];
+            for (let container of linkContainers) {
+                const url = container.querySelector('.linkUrl').value.trim();
+                const platform = container.querySelector('.linkPlatform').value;
+                const architecture = container.querySelector('.linkArchitecture').value;
+                if (url) {
+                    links.push({ url, platform, architecture });
+                }
+            }
+
+            if (!title || !description || (!imageUrl && !imageFile) || links.length === 0) {
+                alert('Please fill all fields and at least one link.');
+                return;
+            }
+
+            let action, endpoint = 'ap.php';
+            if (currentEditIndex === null) {
+                action = 'add_app_block';
+            } else {
+                action = 'update_app_block';
+            }
+
+            try {
+                let response;
+                if (imageFile) {
+                    // Use FormData for file upload
+                    const formData = new FormData();
+                    formData.append('action', action);
+                    formData.append('title', title);
+                    formData.append('description', description);
+                    formData.append('image_file', imageFile);
+                    formData.append('links', JSON.stringify(links));
+                    if (currentEditIndex !== null) {
+                        formData.append('index', currentEditIndex);
+                    }
+                    response = await fetch(endpoint, { method: 'POST', body: formData });
+                } else {
+                    // JSON with image_url
+                    const payload = {
+                        action: action,
+                        title: title,
+                        description: description,
+                        image_url: imageUrl,
+                        links: links
+                    };
+                    if (currentEditIndex !== null) {
+                        payload.index = currentEditIndex;
+                    }
+                    response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    alert(data.message);
+                    hideForm();
+                    await loadApps(); // refresh list and reset search
+                } else {
+                    alert('Error: ' + data.message);  // Now shows the detailed reason
+                }
+            } catch (error) {
+                alert('An error occurred. Please try again.');
+            }
+        }
+
+        async function deleteApp(index) {
+            if (!confirm('Are you sure you want to delete this app?')) return;
+            try {
+                const response = await fetch('ap.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'delete_app_block', index: index })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert(data.message);
+                    await loadApps(); // refresh list and reset search
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('An error occurred.');
+            }
+        }
+
+        // ---------- Logout ----------
+        async function logout() {
+            try {
+                const response = await fetch('ap.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'logout' })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    window.location.href = 'a.html';
+                }
+            } catch (error) {
+                console.error('Error logging out:', error);
+            }
+        }
+
+        // Start
+        window.onload = checkSession;
+    </script>
+</body>
+</html>

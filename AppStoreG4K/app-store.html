@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G4K App Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .app-card {
+            background-color: #161b22;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .download-btn {
+            background-color: #238636;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .download-btn:hover {
+            background-color: #2ea043;
+            transform: scale(1.05);
+        }
+        .download-btn:active {
+            transform: scale(0.95);
+        }
+        .spinner {
+            border-top-color: #3b82f6;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
+        }
+        @-webkit-keyframes spinner {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .message-box.show {
+            display: flex;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+    <div class="container min-h-screen flex flex-col items-center">
+        <!-- Header -->
+        <header class="w-full flex flex-col sm:flex-row justify-between items-center py-4 mb-8 space-y-4 sm:space-y-0">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                <h1 class="text-3xl font-bold text-gray-100">G4K App Store</h1>
+            </div>
+            <nav class="flex space-x-2">
+                <a href="#" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-white font-medium transition duration-300">Home</a>
+                <button onclick="fetchApps()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white font-medium transition duration-300">Refresh List</button>
+                <button onclick="clearAllSiteDataAndReload()" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white font-medium transition duration-300">Clear All Data & Update</button>
+            </nav>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="w-full mb-8">
+            <input type="text" id="searchInput" placeholder="Search for apps..." class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200" oninput="filterApps()">
+        </div>
+
+        <!-- Main Content -->
+        <main class="w-full flex flex-col items-center">
+            <!-- Loading and Error Indicators -->
+            <div id="loading" class="flex flex-col items-center justify-center p-8 text-gray-400">
+                <div class="spinner border-4 border-t-4 border-gray-600 rounded-full h-12 w-12 mb-4"></div>
+                <p>Loading apps...</p>
+            </div>
+            <div id="error-message" class="text-red-400 font-medium p-4 rounded-lg bg-red-900/50 hidden">
+                Failed to load apps. Please try again later.
+            </div>
+
+            <!-- App List -->
+            <div id="app-list" class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <!-- App cards will be dynamically inserted here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Message Box -->
+    <div id="message-box" class="message-box bg-gray-800 text-gray-200 border border-gray-700 shadow-xl hidden">
+        <h3 id="message-title" class="text-xl font-semibold mb-2"></h3>
+        <p id="message-text" class="text-sm mb-4"></p>
+        <button onclick="hideMessage()" class="px-4 py-2 bg-blue-500 rounded-lg text-white font-medium hover:bg-blue-600 transition duration-300">OK</button>
+    </div>
+
+    <script>
+        let allApps = []; // Store the full list of apps
+
+        // Global variables for message box
+        const messageBox = document.getElementById('message-box');
+        const messageTitle = document.getElementById('message-title');
+        const messageText = document.getElementById('message-text');
+
+        function showMessage(title, text) {
+            messageTitle.textContent = title;
+            messageText.textContent = text;
+            messageBox.classList.remove('hidden');
+            messageBox.classList.add('show');
+        }
+
+        function hideMessage() {
+            messageBox.classList.add('hidden');
+            messageBox.classList.remove('show');
+        }
+
+        async function fetchApps() {
+            const loading = document.getElementById('loading');
+            const errorElement = document.getElementById('error-message');
+            const appList = document.getElementById('app-list');
+
+            loading.classList.remove('hidden');
+            errorElement.classList.add('hidden');
+            appList.innerHTML = '';
+
+            try {
+                // Fetch the apps.txt file with a cache-busting query parameter
+                const cacheBuster = `?t=${new Date().getTime()}`;
+                const response = await fetch(`apps.txt${cacheBuster}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const text = await response.text();
+                allApps = parseAppsFile(text);
+                
+                if (allApps.length === 0) {
+                    throw new Error('No apps found in the database.');
+                }
+                
+                renderApps(allApps);
+
+            } catch (error) {
+                console.error('Error fetching or parsing apps:', error);
+                errorElement.classList.remove('hidden');
+                showMessage('Error', 'Failed to load apps. Please check your network connection and try again.');
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+
+        async function clearAllSiteDataAndReload() {
+            showMessage('Clearing Data...', 'Clearing all site data including cache and cookies. The page will refresh shortly.');
+
+            // Clear all caches
+            if ('caches' in window) {
+                const keys = await caches.keys();
+                await Promise.all(keys.map(key => caches.delete(key)));
+            }
+
+            // Clear localStorage
+            localStorage.clear();
+
+            // Clear all cookies
+            document.cookie.split(";").forEach(function(c) {
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
+
+            // Wait a moment for the message to be seen, then reload
+            setTimeout(() => {
+                const uniqueUrl = window.location.href.split('?')[0] + '?v=' + new Date().getTime();
+                window.location.href = uniqueUrl;
+            }, 1000);
+        }
+
+        function parseAppsFile(text) {
+            const appBlocks = text.split('***').filter(block => block.trim() !== '');
+            const apps = [];
+            appBlocks.forEach(block => {
+                const lines = block.trim().split('\n');
+                if (lines.length >= 4) {
+                    const name = lines[0].trim();
+                    const description = lines[1].trim();
+                    const icon = lines[2].trim();
+                    const links = lines[3].trim().split(', ').map(linkStr => {
+                        const [url, server] = linkStr.split(' (');
+                        const serverName = server ? server.replace(')', '') : 'Download';
+                        return { url: url, server: serverName };
+                    });
+                    apps.push({ name, description, icon, links });
+                }
+            });
+            return apps;
+        }
+
+        function renderApps(apps) {
+            const appList = document.getElementById('app-list');
+            appList.innerHTML = ''; // Clear previous content
+            
+            if (apps.length === 0) {
+                appList.innerHTML = '<p class="text-center text-gray-400 text-lg col-span-full">No apps found matching your search.</p>';
+                return;
+            }
+
+            apps.forEach(app => {
+                const appCard = document.createElement('div');
+                appCard.className = 'app-card p-6 rounded-2xl shadow-lg border border-gray-700 flex flex-col items-center text-center';
+                
+                appCard.innerHTML = `
+                    <div class="mb-4">
+                        <img src="${app.icon}" alt="${app.name} Icon" class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-2 border-gray-600">
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-100 mb-2">${app.name}</h2>
+                    <p class="text-xs sm:text-sm text-gray-400 mb-4">${app.description}</p>
+                    <div class="flex-grow"></div>
+                    <div class="w-full flex flex-col space-y-2">
+                        ${app.links.map(link => `
+                            <a href="${link.url}" class="download-btn w-full px-4 py-2 rounded-lg text-white text-sm sm:text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900" target="_blank" rel="noopener noreferrer">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Download from ${link.server}
+                            </a>
+                        `).join('')}
+                    </div>
+                `;
+                
+                appList.appendChild(appCard);
+            });
+        }
+
+        function filterApps() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const filteredApps = allApps.filter(app => 
+                app.name.toLowerCase().includes(searchInput) ||
+                app.description.toLowerCase().includes(searchInput)
+            );
+            renderApps(filteredApps);
+        }
+
+        // Start fetching apps when the page loads
+        window.onload = fetchApps;
+    </script>
+</body>
+</html>
+

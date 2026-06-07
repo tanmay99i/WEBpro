@@ -1,0 +1,12 @@
+<Files "pass.txt">
+    # Deny direct access to pass.txt
+    Order Allow,Deny
+    Deny from all
+
+    # Allow access only if requested from your login page
+    <If "%{HTTP_REFERER} =~ m#^https?://(www\.)?g4k\.rf\.gd/login\.html#">
+        Allow from all
+    </If>
+</Files>
+
+    #only allow login page to access and authenticate pass.txt
